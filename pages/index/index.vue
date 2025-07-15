@@ -15,14 +15,14 @@
 			</swiper>
 		</view>
 
-		<view class="notice">
+		<view class="notice" @click="goNotice()">
 			<view class="left">
 				<uni-icons type="sound-filled" size="20" color="#28b389"></uni-icons>
 				<text class="mText">公告</text>
 			</view>
 			<view class="center">
 				<swiper vertical autoplay interval="1500" duration="300" circular>
-					<swiper-item v-for="item in 4">text</swiper-item>
+					<swiper-item v-for="(item,index) in 6">这是第{{index+1}}条公告</swiper-item>
 				</swiper>
 			</view>
 			<view class="right">
@@ -71,6 +71,11 @@ const goPreview = (id) => {
 		url: '/pages/preview/preview?id=' + id
 	});
 };
+const goNotice = (id) => {
+	uni.navigateTo({
+		url: '/pages/notice/detail?id=' + id 
+	});
+};
 </script>
 
 <style lang="scss" scoped>
@@ -87,7 +92,7 @@ const goPreview = (id) => {
 				width: 100%;
 				height: 100%;
 				padding: 0 30rpx;
-
+				
 				image {
 					width: 100%;
 					height: 100%;
