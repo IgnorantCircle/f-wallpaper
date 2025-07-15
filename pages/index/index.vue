@@ -1,16 +1,10 @@
 <template>
 	<view class="homeLayout pageBg">
-		<custom-nav-bar title="推荐"></custom-nav-bar>
+		<custom-nav-bar title="推荐" />
 		<view class="banner">
 			<swiper circular indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" autoplay>
-				<swiper-item>
-					<image src="../../common/images/banner1.jpg" mode="aspectFill"></image>
-				</swiper-item>
-				<swiper-item>
-					<image src="../../common/images/banner2.jpg" mode="aspectFill"></image>
-				</swiper-item>
-				<swiper-item>
-					<image src="../../common/images/banner3.jpg" mode="aspectFill"></image>
+				<swiper-item v-for="item in bannerList" :key="item._id">
+					<image :src="item.picurl" mode="aspectFill"></image>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -22,7 +16,7 @@
 			</view>
 			<view class="center">
 				<swiper vertical autoplay interval="1500" duration="300" circular>
-					<swiper-item v-for="(item,index) in 6">这是第{{index+1}}条公告</swiper-item>
+					<swiper-item v-for="(item, index) in 6" :key="index">这是第{{ index + 1 }}条公告</swiper-item>
 				</swiper>
 			</view>
 			<view class="right">
@@ -44,8 +38,8 @@
 			</common-title>
 			<view class="content">
 				<scroll-view scroll-x>
-					<view class="box" v-for="item in 8">
-						<image src="/common/images/preview1.jpg" mode="aspectFill" @click="goPreview()"></image>
+					<view class="box" v-for="item in randomList">
+						<image :src="item.smallPicurl" mode="aspectFill" @click="goPreview()"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -54,18 +48,25 @@
 			<common-title>
 				<template #name>专题精选</template>
 				<template #custom>
-					<navigator url="/pages/classList/classList">more+</navigator>
+					<navigator url="/pages/classList/classList" open-type="reLaunch" class="more">More+</navigator>
 				</template>
 			</common-title>
 			<view class="content">
-				<theme-item v-for="item in 8"></theme-item>
-				<theme-item :isMore="true"></theme-item>
+				<theme-item v-for="item in classifyList" :key="item._id" :classify="item" />
+				<theme-item :isMore="true" />
 			</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import { apiGetBanner, apiGetDayRandom, apiGetClassify } from '@/api/apis.js';
+import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+const bannerList = ref([]);
+const randomList = ref([]);
+const classifyList = ref([]);
+
 const goPreview = (id) => {
 	uni.navigateTo({
 		url: '/pages/preview/preview?id=' + id
@@ -73,9 +74,45 @@ const goPreview = (id) => {
 };
 const goNotice = (id) => {
 	uni.navigateTo({
-		url: '/pages/notice/detail?id=' + id 
+		url: '/pages/notice/detail?id=' + id
 	});
 };
+
+//获取banner图
+const getBanner = async () => {
+	const res = await apiGetBanner();
+	bannerList.value = res.data;
+};
+//每日随机
+const getDayRandom = async () => {
+	const res = await apiGetDayRandom();
+	randomList.value = res.data;
+};
+
+const getClassify = async () => {
+	const res = await apiGetClassify({
+		select: true
+	});
+	classifyList.value = res.data;
+};
+
+//分享给好友
+onShareAppMessage((e) => {
+	return {
+		title: '好看的手机壁纸',
+		path: '/pages/classify/classify'
+	};
+});
+
+//分享朋友圈
+onShareTimeline(() => {
+	return {
+		title: '好看的手机壁纸'
+	};
+});
+getBanner();
+getDayRandom();
+getClassify();
 </script>
 
 <style lang="scss" scoped>
@@ -92,7 +129,7 @@ const goNotice = (id) => {
 				width: 100%;
 				height: 100%;
 				padding: 0 30rpx;
-				
+
 				image {
 					width: 100%;
 					height: 100%;
