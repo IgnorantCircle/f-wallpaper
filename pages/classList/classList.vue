@@ -1,18 +1,91 @@
 <template>
 	<view class="classList">
-		<view class="loadingLayout">
+		<view class="loadingLayout" v-if="!classList.length && !noData">
 			<uni-load-more status="loading"></uni-load-more>
 		</view>
 		<view class="content">
-			<navigator url="" v-for="item in 10" class="item">
-				<image src="/common/images/preview2.jpg" mode="aspectFill"></image>
+			<navigator url="/pages/preview/preview" v-for="item in classList" class="item" :key="item._id">
+				<image :src="item.smallPicurl" mode="aspectFill"></image>
 			</navigator>
 		</view>
+		<view class="loadingLayout" v-if="classList.length || noData">
+			<uni-load-more :status="noData ? 'noMore' : 'loading'"></uni-load-more>
+		</view>
+		<view class="safe-area-inset-bottom"></view>
 	</view>
 </template>
 
 <script setup>
-	
+import { ref } from 'vue';
+import { apiGetClassList, apiGetHistoryList } from '@/api/apis.js';
+import { onLoad, onUnload, onReachBottom, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { debounce } from '@/utils/common.js';
+//分类列表数据
+const classList = ref([]);
+const noData = ref(false);
+//定义data参数
+const queryParams = {
+	pageNum: 1,
+	pageSize: 12
+};
+let pageName;
+const getClassList = async () => {
+	let res;
+	if (queryParams.classid) {
+		res = await apiGetClassList(queryParams);
+	}
+	if (queryParams.type) {
+		res = await apiGetHistoryList(queryParams);
+	}
+	classList.value = [...classList.value, ...res.data];
+
+	//判断还是有没有数据,因为一次12条，如果最后一次少于12条，说明后面
+	if (queryParams.pageSize > res.data.length){
+	noData.value = true;	
+	} 
+	//缓存数据
+	uni.setStorageSync('storgClassList', classList.value);
+};
+onLoad((e) => {
+	const { id = null, name = null, type = null } = e;
+	if (type) queryParams.type - type;
+	if (id) queryParams.classid = id;
+	pageName = name;
+	//修改导航标题
+	uni.setNavigationBarTitle({
+		title: name
+	});
+	//获取分类列表
+	getClassList();
+});
+
+onReachBottom(() => {
+	if (noData.value) return;
+
+	debounceGetClassList();
+});
+
+const debounceGetClassList = debounce(() => {
+	queryParams.pageNum++;
+	getClassList();
+}, 1000);
+//分享给好友
+onShareAppMessage((e) => {
+	return {
+		title: '每日壁纸-' + pageName,
+		path: '/pages/classlist/classlist?id=' + queryParams.classid + '&name=' + pageName
+	};
+});
+//分享朋友圈
+onShareTimeline(() => {
+	return {
+		title: '每日壁纸-' + pageName,
+		query: 'id=' + queryParams.classid + '&name=' + pageName
+	};
+});
+onUnload(() => {
+	uni.removeStorageSync('storgClassList');
+});
 </script>
 
 <style lang="scss" scoped>

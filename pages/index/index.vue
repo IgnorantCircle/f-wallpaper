@@ -52,7 +52,7 @@
 				</template>
 			</common-title>
 			<view class="content">
-				<theme-item v-for="item in classifyList" :key="item._id" :classify="item" />
+				<theme-item v-for="item in classifyList" :key="item._id" :listItem="item" />
 				<theme-item :isMore="true" />
 			</view>
 		</view>

@@ -1,12 +1,10 @@
 <template>
 	<view class="themeItem">
-		<navigator url="/pages/classList/classList" class="box" v-if="!isMore">
-			<image class="pic" :src="classify.picurl"></image>
-			<view class="mask">{{ classify.name }}</view>
+		<navigator :url="'/pages/classList/classList?id='+listItem._id+'&name='+listItem.name"  class="box" v-if="!isMore">
+			<image class="pic" :src="listItem.picurl"></image>
+			<view class="mask">{{ listItem.name }}</view>
 			<!-- 假数据，为了更好区分 -->
-			<view class="tab" v-if="compareTimestamp(classify.updateTime)">
-				{{ compareTimestamp(classify.updateTime)}}前更新
-			</view>
+			<view class="tab" v-if="compareTimestamp(listItem.updateTime)">{{ compareTimestamp(listItem.updateTime) }}前更新</view>
 		</navigator>
 
 		<navigator url="/pages/classify/classify" class="box more" open-type="reLaunch" v-if="isMore">
@@ -26,7 +24,7 @@ defineProps({
 		type: Boolean,
 		default: false
 	},
-	classify: {
+	listItem: {
 		type: Object,
 		default() {
 			return {
@@ -83,7 +81,8 @@ defineProps({
 			width: 100%;
 			height: 100%;
 			flex-direction: column;
-		}.text{
+		}
+		.text {
 			font-size: 28rpx;
 		}
 	}

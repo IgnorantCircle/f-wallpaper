@@ -24,7 +24,9 @@
 		{
 			"path": "pages/classList/classList",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationStyle":"default",
+				"navigationBarTitleText": "分类列表",
+				"enablePullDownRefresh": false
 			}
 		},
 		{

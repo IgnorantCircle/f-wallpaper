@@ -9,7 +9,8 @@ export function request(config = {}) {
 		header = {}
 	} = config
 	url = BASE_URL + url,
-		header['access-key'] = "xxm123321@#"
+		// 获取key地址：https://api.qingnian8.com/apis/
+		header['access-key'] = "159753"
 	return new Promise((resolve, reject) => {
 		uni.request({
 			url,

@@ -18,3 +18,16 @@ export function apiGetClassify(data={}){
 		data
 	})
 }
+export function apiGetClassList(data={}){
+	return request({
+		url:"/wallList",
+		data
+	})
+}
+
+export function apiGetHistoryList(data={}){
+	return request({
+		url:"/userWallList",
+		data
+	})
+}
