@@ -11,8 +11,8 @@
 
 		<!-- 遮罩层 -->
 		<view class="mask" v-show="maskState">
-			<view class="goBack">
-				<uni-icons type="back"></uni-icons>
+			<view class="goBack" @click="goBack" :style="{ top: getStatusBarHeight() + 'px' }">
+				<uni-icons type="back" color="#fff" size="20" />
 			</view>
 			<view class="count">3/9</view>
 			<view class="time">
@@ -75,43 +75,41 @@
 								<view class="tab" v-for="tab in 4">baji</view>
 							</view>
 						</view>
-						<view class="copyright">声明：本图片来用户投稿，非商业使用，用于免费学习交流，如侵犯了您的权益，您可以拷贝壁纸ID举报至平台，管理将删除侵权壁纸，维护您的权益。
+						<view class="copyright">
+							声明：本图片来用户投稿，非商业使用，用于免费学习交流，如侵犯了您的权益，您可以拷贝壁纸ID举报至平台，管理将删除侵权壁纸，维护您的权益。
 						</view>
 					</view>
 				</scroll-view>
 			</view>
 		</uni-popup>
-	<!-- 评分弹窗 -->
-	<uni-popup ref="ratePopup" type="center" :is-mask-click="false">
-		<view class="ratePopup">
-			<view class="popHeader">
-				<view></view>
-				<view class="title">
-					{{isScore?'评分过了～':'壁纸评分'}}
+		<!-- 评分弹窗 -->
+		<uni-popup ref="ratePopup" type="center" :is-mask-click="false">
+			<view class="ratePopup">
+				<view class="popHeader">
+					<view></view>
+					<view class="title">
+						{{ isScore ? '评分过了～' : '壁纸评分' }}
+					</view>
+					<view class="close" @click="closeRateView">
+						<uni-icons type="closeempty" size="18" color="#999"></uni-icons>
+					</view>
 				</view>
-				<view class="close" @click="closeRateView">
-					<uni-icons type="closeempty" size="18" color="#999"></uni-icons>
+
+				<view class="content">
+					<uni-rate v-model="userScore" allowHalf :disabled="isRate" disabled-color="#FFCA3E" />
+					<text class="text">{{ userScore }}分</text>
+				</view>
+				<view class="footer">
+					<button type="default" :disabled="!userScore" size="mini" @click="submitScore">确认评分</button>
 				</view>
 			</view>
-			
-		<view class="content">
-			<uni-rate v-model="userScore" allowHalf :disabled="isRate" disabled-color="#FFCA3E"/>
-			<text class="text">
-				{{userScore}}分
-			</text>
-		</view>
-		<view class="footer">
-			<button type="default" :disabled="!userScore" size="mini" @click="submitScore">
-				确认评分
-			</button>
-		</view>
-		</view>
-	</uni-popup>
+		</uni-popup>
 	</view>
 </template>
 
 <script setup>
 import { reactive, ref } from 'vue';
+import { getStatusBarHeight } from '@/utils/system.js';
 
 const maskState = ref(true);
 const infoPopup = ref(null);
@@ -120,28 +118,43 @@ const userScore = ref(0);
 
 //点击info弹窗
 const openInfoView = () => {
-	
 	infoPopup.value.open();
 };
-const closeInfoView = ()=>{
-	infoPopup.value.close()
-}
+const closeInfoView = () => {
+	infoPopup.value.close();
+};
 
 //点击评分弹窗
-const openRateView = ()=>{
-	ratePopup.value.open()
-}
-const closeRateView = ()=>{
-	ratePopup.value.close()
-}
+const openRateView = () => {
+	ratePopup.value.open();
+};
+const closeRateView = () => {
+	ratePopup.value.close();
+};
 
-
+//遮罩层状态
 const maskChange = () => {
 	maskState.value = !maskState.value;
 };
 
-const submitScore = ()=>{
-	console.log(userScore.value)
+//评分
+const submitScore = () => {
+	console.log(userScore.value);
+};
+
+//返回上一页
+const goBack = ()=>{
+	uni.navigateBack({
+		success:()=>{
+			
+		},
+		fail:(err)=>{
+			//失败返回首页
+			uni.reLaunch({
+				url:"/pages/index/index"
+			})
+		}
+	})
 }
 </script>
 
@@ -267,10 +280,10 @@ const submitScore = ()=>{
 						flex: 1;
 						width: 0;
 					}
-					.rateBox{
+					.rateBox {
 						display: flex;
 						align-items: center;
-						.score{
+						.score {
 							font-size: 26rpx;
 							color: $text-font-color-2;
 							padding-left: 10rpx;
@@ -289,33 +302,32 @@ const submitScore = ()=>{
 							margin: 0 10rpx 10rpx 0;
 						}
 					}
-					}
-				.copyright{
+				}
+				.copyright {
 					font-size: 28rpx;
 					padding: 20rpx;
-					background-color: #F6F6F6;
-					color:#666;
+					background-color: #f6f6f6;
+					color: #666;
 					border-radius: 10rpx;
 					margin: 20rpx 0;
 					line-height: 1.6em;
 				}
-				
 			}
 		}
 	}
 
-	.ratePopup{
+	.ratePopup {
 		background-color: #fff;
 		padding: 30rpx;
 		width: 70vw;
 		border-radius: 30rpx;
-		.content{
+		.content {
 			padding: 30rpx 0;
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			.text{
-				color: #FFCA3E;
+			.text {
+				color: #ffca3e;
 				padding-left: 10rpx;
 				width: 80rpx;
 				line-height: 1em;
@@ -323,8 +335,8 @@ const submitScore = ()=>{
 				font-size: 28rpx;
 			}
 		}
-		.footer{
-			padding:10rpx 0;
+		.footer {
+			padding: 10rpx 0;
 			display: flex;
 			align-items: center;
 			justify-content: center;

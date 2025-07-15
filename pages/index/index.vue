@@ -1,6 +1,6 @@
 <template>
 	<view class="homeLayout pageBg">
-	<custom-nav-bar title="推荐"></custom-nav-bar>
+		<custom-nav-bar title="推荐"></custom-nav-bar>
 		<view class="banner">
 			<swiper circular indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" autoplay>
 				<swiper-item>
@@ -45,7 +45,7 @@
 			<view class="content">
 				<scroll-view scroll-x>
 					<view class="box" v-for="item in 8">
-						<image src="/common/images/preview1.jpg" mode="aspectFill"></image>
+						<image src="/common/images/preview1.jpg" mode="aspectFill" @click="goPreview()"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -65,7 +65,13 @@
 	</view>
 </template>
 
-<script setup></script>
+<script setup>
+const goPreview = (id) => {
+	uni.navigateTo({
+		url: '/pages/preview/preview?id=' + id
+	});
+};
+</script>
 
 <style lang="scss" scoped>
 .homeLayout {
