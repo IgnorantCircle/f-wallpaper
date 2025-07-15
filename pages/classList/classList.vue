@@ -4,7 +4,7 @@
 			<uni-load-more status="loading"></uni-load-more>
 		</view>
 		<view class="content">
-			<navigator url="/pages/preview/preview" v-for="item in classList" class="item" :key="item._id">
+			<navigator :url="'/pages/preview/preview?id='+item._id" v-for="item in classList" class="item" :key="item._id">
 				<image :src="item.smallPicurl" mode="aspectFill"></image>
 			</navigator>
 		</view>
@@ -40,11 +40,11 @@ const getClassList = async () => {
 	classList.value = [...classList.value, ...res.data];
 
 	//判断还是有没有数据,因为一次12条，如果最后一次少于12条，说明后面
-	if (queryParams.pageSize > res.data.length){
-	noData.value = true;	
-	} 
+	if (queryParams.pageSize > res.data.length) {
+		noData.value = true;
+	}
 	//缓存数据
-	uni.setStorageSync('storgClassList', classList.value);
+	uni.setStorageSync('storageClassList', classList.value);
 };
 onLoad((e) => {
 	const { id = null, name = null, type = null } = e;
