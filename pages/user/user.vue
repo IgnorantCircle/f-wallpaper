@@ -1,16 +1,16 @@
 <template>
-	<view class="layout pageBg">
-		<view class=""></view>
+	<view class="layout pageBg" v-if="userinfo" >
+		<view :style="{ height: getNavBarHeight() + 'px' }" />
 		<view class="userInfo">
 			<view class="avatar">
 				<image src="/static/logo.png" mode=""></image>
 			</view>
-			<view class="ip">111.122.133.144</view>
-			<view class="address">来自于</view>
+			<view class="ip">{{ userinfo.IP }}</view>
+			<view class="address">{{ userinfo.address.city || userinfo.address.province || userinfo.address.country }}</view>
 		</view>
 
 		<view class="section">
-			<view class="container" v-for="item in section1">
+			<view class="container" v-for="item in section1" :key="item._id">
 				<user-list :listInfo="item">
 					<template #contact v-if="item.isContact">
 						<!-- #ifdef MP -->
@@ -24,7 +24,7 @@
 			</view>
 		</view>
 		<view class="section">
-			<view class="container" v-for="item in section2">
+			<view class="container" v-for="item in section2" :key="item.text">
 				<user-list :listInfo="item"></user-list>
 			</view>
 		</view>
@@ -32,48 +32,62 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
-const section1 = reactive([
-	{
-		icon: 'download-filled',
-		text: '我的下载',
-		isShowNum: true
-	},
-	{
-		icon: 'star-filled',
-		text: '我的评分',
-		isShowNum: true
-	},
-	{
-		icon: 'chatboxes-filled',
-		text: '联系客服',
-		isShowNum: false,
-		isContact: true
-	}
-]);
+import { computed, reactive, ref } from 'vue';
+import { getNavBarHeight } from '@/utils/system.js';
+import { apiUserInfo } from '@/api/apis.js';
 
-const section2 = reactive([
+const userinfo = ref(null);
+const section1 = computed(() => {
+	return [
+		{
+			icon: 'download-filled',
+			text: "我的下载",
+			isShowNum: true,
+			count: userinfo.value.downloadSize,
+			navUrl: '/pages/classList/classList?name=我的下载&type=download'
+		},
+		{
+			icon: 'star-filled',
+			text: '我的评分',
+			isShowNum: true,
+			count:userinfo.value.scoreSize,
+			navUrl: "/pages/classList/classList?name=我的评分&type=score" 
+		},
+		{
+			icon: 'chatboxes-filled',
+			text: '联系客服',
+			isShowNum: false,
+			isContact: true
+		}
+	]
+});
+
+
+const section2 = ref([
 	{
 		icon: 'notification-filled',
 		text: '订阅更新',
-		isShowNum: false
+		isShowNum: false,
+		navUrl:'/pages/notice/notice'
 	},
 	{
 		icon: 'flag-filled',
 		text: '常见问题',
-		isShowNum: false
+		navUrl:'/pages/notice/notice'
 	}
 ]);
-const clickContact = ()=>{
+const clickContact = () => {
 	uni.makePhoneCall({
-		phoneNumber:'114'
-	})
+		phoneNumber: '114'
+	});
 };
 
-const getUserInfo = ()=>{
-	
-}
-
+const getUserInfo = () => {
+	apiUserInfo().then((res) => {
+		userinfo.value = res.data;
+	});
+};
+getUserInfo();
 </script>
 
 <style lang="scss" scoped>
@@ -114,9 +128,7 @@ const getUserInfo = ()=>{
 			border-bottom: 1px solid #eee;
 			&:last-child {
 				border-bottom: 0;
-				
 			}
-			
 		}
 	}
 }

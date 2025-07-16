@@ -33,8 +33,7 @@ const getClassList = async () => {
 	let res;
 	if (queryParams.classid) {
 		res = await apiGetClassList(queryParams);
-	}
-	if (queryParams.type) {
+	}else if (queryParams.type) {
 		res = await apiGetHistoryList(queryParams);
 	}
 	classList.value = [...classList.value, ...res.data];
@@ -47,12 +46,13 @@ const getClassList = async () => {
 	uni.setStorageSync('storageClassList', classList.value);
 };
 onLoad((e) => {
-	const { id = null, name = null, type = null } = e;
-	if (!id) {
+	const { id = null, name = null, type = null } = e;	
+	//如果没有带id和type，就返回首页
+	if (!id&&!type) {
 		noData.value = true;
 		goHome();
 	} else {
-		if (type) queryParams.type - type;
+		if (type) queryParams.type=type;
 		queryParams.classid = id;
 		pageName = name;
 		//修改导航标题

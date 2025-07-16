@@ -1,12 +1,12 @@
 <template>
-	<navigator url="" class="list">
+	<navigator :url="listInfo.navUrl" class="list">
 		<view class="row">
 			<view class="left">
 				<uni-icons :type="listInfo.icon" size="20"></uni-icons>
 				<view class="text">{{ listInfo.text }}</view>
 			</view>
 			<view class="right">
-				<view class="text" v-if="listInfo.isShowNum">0</view>
+				<view class="text" v-if="listInfo.isShowNum">{{ listInfo.count }}</view>
 				<uni-icons type="right" size="15" color="#aaa"></uni-icons>
 			</view>
 			<view class="contactBtn">
@@ -17,23 +17,23 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
-
-defineProps({
+ defineProps({
 	listInfo: {
 		type: Object,
 		default() {
 			return {
 				icon: 'more-filled',
 				text: '敬请期待',
-				isShowNum: false
+				isShowNum: false,
+				count:0
 			};
 		}
 	}
 });
-const userinfo = reactive({})
 
-
+setTimeout(()=>{
+	console.log()
+})
 </script>
 
 <style lang="scss" scoped>

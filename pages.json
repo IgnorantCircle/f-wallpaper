@@ -47,14 +47,16 @@
 			"path": "pages/notice/notice",
 			"style": {
 				"navigationBarTitleText": "公告",
-				"enablePullDownRefresh": false
+				"enablePullDownRefresh": false,
+				"navigationStyle":"default"
 			}
 		},
 		{
 			"path": "pages/notice/detail",
 			"style": {
 				"navigationBarTitleText": "公告详情",
-				"enablePullDownRefresh": false
+				"enablePullDownRefresh": false,
+				"navigationStyle":"default"
 			}
 		}
 	],
