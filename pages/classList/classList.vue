@@ -4,7 +4,7 @@
 			<uni-load-more status="loading"></uni-load-more>
 		</view>
 		<view class="content">
-			<navigator :url="'/pages/preview/preview?id='+item._id" v-for="item in classList" class="item" :key="item._id">
+			<navigator :url="'/pages/preview/preview?id=' + item._id" v-for="item in classList" class="item" :key="item._id">
 				<image :src="item.smallPicurl" mode="aspectFill"></image>
 			</navigator>
 		</view>
@@ -19,7 +19,7 @@
 import { ref } from 'vue';
 import { apiGetClassList, apiGetHistoryList } from '@/api/apis.js';
 import { onLoad, onUnload, onReachBottom, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
-import { debounce } from '@/utils/common.js';
+import { debounce, goHome } from '@/utils/common.js';
 //分类列表数据
 const classList = ref([]);
 const noData = ref(false);
@@ -48,15 +48,20 @@ const getClassList = async () => {
 };
 onLoad((e) => {
 	const { id = null, name = null, type = null } = e;
-	if (type) queryParams.type - type;
-	if (id) queryParams.classid = id;
-	pageName = name;
-	//修改导航标题
-	uni.setNavigationBarTitle({
-		title: name
-	});
-	//获取分类列表
-	getClassList();
+	if (!id) {
+		noData.value = true;
+		goHome();
+	} else {
+		if (type) queryParams.type - type;
+		queryParams.classid = id;
+		pageName = name;
+		//修改导航标题
+		uni.setNavigationBarTitle({
+			title: name
+		});
+		//获取分类列表
+		getClassList();
+	}
 });
 
 onReachBottom(() => {
@@ -69,11 +74,12 @@ const debounceGetClassList = debounce(() => {
 	queryParams.pageNum++;
 	getClassList();
 }, 1000);
+
 //分享给好友
 onShareAppMessage((e) => {
 	return {
 		title: '每日壁纸-' + pageName,
-		path: '/pages/classlist/classlist?id=' + queryParams.classid + '&name=' + pageName
+		path: '/pages/classList/classList?id=' + queryParams.classid + '&name=' + pageName
 	};
 });
 //分享朋友圈
@@ -84,7 +90,7 @@ onShareTimeline(() => {
 	};
 });
 onUnload(() => {
-	uni.removeStorageSync('storgClassList');
+	uni.removeStorageSync('storageClassList');
 });
 </script>
 

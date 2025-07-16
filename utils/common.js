@@ -55,3 +55,19 @@ export function debounce(func, delay, immediate = false) {
 		}, delay);
 	};
 }
+
+
+export const goHome = ()=>{
+	uni.showModal({
+		title: "提示",
+		content: "页面有误，将返回页面",
+		showCancel: false,
+		success(res) {
+			if (res.confirm) {
+				uni.reLaunch({
+					url: "/pages/index/index"
+				})
+			}
+		}
+	})
+}

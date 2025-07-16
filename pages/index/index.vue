@@ -38,8 +38,8 @@
 			</common-title>
 			<view class="content">
 				<scroll-view scroll-x>
-					<view class="box" v-for="item in randomList">
-						<image :src="item.smallPicurl" mode="aspectFill" @click="goPreview()"></image>
+					<view class="box" v-for="item in randomList" :key="item._id">
+						<image :src="item.smallPicurl" mode="aspectFill" @click="goPreview(item._id)"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -68,9 +68,10 @@ const randomList = ref([]);
 const classifyList = ref([]);
 
 const goPreview = (id) => {
+	uni.setStorageSync("storageClassList",randomList.value);
 	uni.navigateTo({
-		url: '/pages/preview/preview?id=' + id
-	});
+		url:"/pages/preview/preview?id="+id
+	})	
 };
 const goNotice = (id) => {
 	uni.navigateTo({

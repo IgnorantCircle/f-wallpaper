@@ -1,6 +1,6 @@
 <template>
 	<view class="preview" v-if="currentInfo">
-		<swiper circular :interval="1500" :duration="1000" :current="currentIndex" @change="swiperChange">
+		<swiper circular :current="currentIndex" @change="swiperChange">
 			<swiper-item v-for="(item, index) in classList" :key="item._id">
 				<image :src="item.picurl" mode="aspectFill" @click="maskChange" v-if="readImgs.includes(index)"></image>
 			</swiper-item>
@@ -35,7 +35,7 @@
 		</view>
 
 		<!-- 信息弹窗 -->
-		<uni-popup ref="infoPopup" type="bottom">
+		<uni-popup ref="infoPopup" type="bottom" :safe-area="false">
 			<view class="infoPopup">
 				<view class="popHeader">
 					<!-- 占位符，用于布局分配 -->
@@ -58,7 +58,7 @@
 						<view class="row">
 							<view class="label">评分：</view>
 							<view class="value rateBox">
-								<uni-rate value="5" readonly touchable size="16" :disabled="isScore" />
+								<uni-rate value="5" :readonly="true" touchable size="16" />
 								<text class="score">{{ currentInfo.score }}分</text>
 							</view>
 						</view>
@@ -69,12 +69,13 @@
 						<view class="row">
 							<view class="label">标签：</view>
 							<view class="value tabs">
-								<view class="tab" v-for="tab in currentInfo.tabs">{{ tab }}</view>
+								<view class="tab" v-for="tab in currentInfo.tabs" :key="tab">{{ tab }}</view>
 							</view>
 						</view>
 						<view class="copyright">
 							声明：本图片来用户投稿，非商业使用，用于免费学习交流，如侵犯了您的权益，您可以拷贝壁纸ID举报至平台，管理将删除侵权壁纸，维护您的权益。
 						</view>
+						<view class="safe-area-inset-bottom"></view>
 					</view>
 				</scroll-view>
 			</view>
@@ -214,6 +215,7 @@ classList.value = storageClassList.map((item) => {
 
 onLoad(async (e) => {
 	currentId.value = e.id;
+	//如果是分享过来的链接，缓存里面是没有东西的，需要请求网络
 	if (e.type === 'share') {
 		const res = await apiDetailWall({ id: currentId.value });
 		classList.value = res.data.map((item) => {
@@ -268,6 +270,7 @@ const clickDownload = async () => {
 							icon: 'none'
 						});
 					},
+
 					fail: (err) => {
 						if (err.errMsg == 'saveImageToPhotosAlbum:fail cancel') {
 							uni.showToast({
@@ -276,6 +279,7 @@ const clickDownload = async () => {
 							});
 							return;
 						}
+						//授权提示 防止授权失败后没有弹出授权造成用户流失
 						uni.showModal({
 							title: '授权提示',
 							content: '需要授权保存相册',
@@ -283,7 +287,6 @@ const clickDownload = async () => {
 								if (res.confirm) {
 									uni.openSetting({
 										success: (setting) => {
-											console.log(setting);
 											if (setting.authSetting['scope.writePhotosAlbum']) {
 												uni.showToast({
 													title: '获取授权成功',
@@ -315,25 +318,20 @@ const clickDownload = async () => {
 };
 
 //分享给好友
-onShareAppMessage((e)=>{
+onShareAppMessage((e) => {
 	return {
-		title:"每日壁纸",
-		path:"/pages/preview/preview?id="+currentId.value+"&type=share"
-	}
-})
-
+		title: '每日壁纸',
+		path: '/pages/preview/preview?id=' + currentId.value + '&type=share'
+	};
+});
 
 //分享朋友圈
-onShareTimeline(()=>{
+onShareTimeline(() => {
 	return {
-		title:"每日壁纸",
-		query:"id="+currentId.value+"&type=share"
-	}
-})
-
-
-
-
+		title: '每日壁纸',
+		query: 'id=' + currentId.value + '&type=share'
+	};
+});
 </script>
 
 <style lang="scss" scoped>
